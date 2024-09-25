@@ -5,7 +5,7 @@
   @brief Implementación de un iBeacon básico usando un SparkFun nRF52840 Mini
   @author Jordi Bataller Mascarell
   @author Alejandro Rosado Jiménez
-  @version 0.1 - En Desarrollo
+  @version 0.2 - En Desarrollo
   @date 25-09-2024
   
   Este archivo contiene la implementación de un iBeacon básico utilizando
