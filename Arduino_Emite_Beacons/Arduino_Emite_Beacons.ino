@@ -5,7 +5,7 @@
   @brief Implementación de un iBeacon básico usando un SparkFun nRF52840 Mini
   @author Jordi Bataller Mascarell
   @author Alejandro Rosado Jiménez
-  @version 0.2 - En Desarrollo
+  @version 0.3 - En Desarrollo
   @date 25-09-2024
   
   Este archivo contiene la implementación de un iBeacon básico utilizando
@@ -151,6 +151,8 @@ void startAdvertising(MedicionSensor medicion) {
 // ----------------------------------------------------
 namespace Loop {
    int cont = 0;
+   unsigned long lastMeasurementTime = 0; // Tiempo de la última medición
+   const unsigned long measurementInterval = 60000; // Intervalo de 1 minuto
 };
 // ....................................................
 void loop() {
@@ -158,6 +160,18 @@ void loop() {
    using namespace Loop;
 
    cont++;
+
+   // Comprobar si ha pasado un minuto
+   unsigned long currentMillis = millis();
+   if (currentMillis - lastMeasurementTime >= measurementInterval) {
+      lastMeasurementTime = currentMillis; // Actualizar el tiempo de la última medición
+
+      // Obtener una nueva medición de los sensores
+      MedicionSensor medicion = obtenerMedicionSensor();
+
+      // Reiniciar advertising con los nuevos valores de medición
+      startAdvertising(medicion);
+   }
 
    delay(1000);
 
