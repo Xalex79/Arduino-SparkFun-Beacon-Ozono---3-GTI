@@ -25,16 +25,16 @@
 BLEUart bleuart;
 
 
-#define PIN_VOzono 5 //pin nº 1 Sesnor Ozono
-#define PIN_Vref 28 //pin nº 2 Sesnor Ozono
-#define PIN_Vtemp 29 //pin nº 3 Sesnor Ozono
+#define PIN_VOzono 5 //pin nº 1 Sensor Ozono
+#define PIN_Vref 28 //pin nº 2 Sensor Ozono
+#define PIN_Vtemp 29 //pin nº 3 Sensor Ozono
 
-//Pines 6 y 7 del sesnor usados como GND y VCC 3.3v respectivamente 
+//Pines 6 y 7 del sensor usados como GND y VCC 3.3v respectivamente 
 
 
 const double SensibilidadSensor = -35.35; //Según el QR del sensor
 const int GananciaSensor = 499; //499 kV/A
-const int BIASsensor = -25; //-25 mV
+const int BIASsensor = -0.025; //-25 mV
 
 //Struct para almacenar los valores de temperatura y GasOzonoCorregido de una medicion 
 struct MedicionSensor {
@@ -219,7 +219,7 @@ MedicionSensor obtenerMedicionSensor() {
  */
 double leerValorAnalogico(int pin) {
   // Se lee el valor digitalizado del pin analógico y se convierte a voltios
-  return (analogRead(pin) * 3.3) / 4096;
+  return ((analogRead(pin) * 3.3) / 4096) - BIASsensor;
 }
 
 /**
