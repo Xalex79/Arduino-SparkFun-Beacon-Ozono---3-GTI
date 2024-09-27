@@ -219,7 +219,7 @@ MedicionSensor obtenerMedicionSensor() {
  */
 double leerValorAnalogico(int pin) {
   // Se lee el valor digitalizado del pin analógico y se convierte a voltios
-  return ((analogRead(pin) * 3.3) / 4096) - BIASsensor;
+  return ((analogRead(pin) * 3.3) / 4096) + BIASsensor;
 }
 
 /**
@@ -247,12 +247,12 @@ double leerOzono() {
 }
 
 /**
- * @brief Leer la temperatura del sensor en ºC
- * @author Alejandro Rosado Jiménez
- * 
- * leerTemperatura() -> double
- * 
- * @returns La temperatura leída en ºC
+  @brief Leer la temperatura del sensor en ºC
+  @author Alejandro Rosado Jiménez
+  
+  leerTemperatura() -> double
+  
+  @returns La temperatura leída en ºC
  */
 double leerTemperatura() {
   double Vtemp = leerValorAnalogico(PIN_Vtemp);
@@ -261,13 +261,13 @@ double leerTemperatura() {
 }
 
 /**
- * @brief Calcula la concentración de ozono a partir del valor leído
- * @author Alejandro Rosado Jiménez
- * 
- * valorOzono: double -> obtenerConcentracionOzono() -> double
- * 
- * @param valorOzono El valor de Ozono leído del sensor
- * @returns La concentración de ozono calculada
+  @brief Calcula la concentración de ozono a partir del valor leído
+  @author Alejandro Rosado Jiménez
+  
+  valorOzono: double -> obtenerConcentracionOzono() -> double
+  
+  @param valorOzono El valor de Ozono leído del sensor
+  @returns La concentración de ozono calculada
  */
 double obtenerConcentracionOzono(double valorOzono) {
   double M = (SensibilidadSensor * GananciaSensor * 0.000001);
@@ -279,14 +279,14 @@ double obtenerConcentracionOzono(double valorOzono) {
 }
 
 /**
- * @brief Corrige la concentración de Ozono basada en la temperatura
- * @author Alejandro Rosado Jiménez
- * 
- * temperatura: double, concentracionOzono: double -> corregirConcentracionOzono() -> double
- * 
- * @param temperatura La temperatura ambiente actual
- * @param concentracionOzono La concentración de Ozono sin corregir
- * @returns La concentración de Ozono corregida por temperatura
+  @brief Corrige la concentración de Ozono basada en la temperatura
+  @author Alejandro Rosado Jiménez
+  
+  temperatura: double, concentracionOzono: double -> corregirConcentracionOzono() -> double
+  
+  @param temperatura La temperatura ambiente actual
+  @param concentracionOzono La concentración de Ozono sin corregir
+  @returns La concentración de Ozono corregida por temperatura
  */
 double corregirConcentracionOzono(double temperatura, double concentracionOzono) {
   // Corregir el "Zero Shift" (ppm/°C para temperaturas mayores de 30°C)
