@@ -226,7 +226,9 @@ MedicionSensor obtenerMedicionSensor() {
  */
 double leerValorAnalogico(int pin) {
   // Se lee el valor digitalizado del pin analógico y se convierte a voltios
-  return ((analogRead(pin) * 3.3) / 4096) + BIASsensor;
+  //Serial.print("Valor pin: ");
+  //Serial.println(analogRead(pin));
+  return ((analogRead(pin) * 3.3) / 1023) + BIASsensor;
 }
 
 /**
@@ -263,7 +265,9 @@ double leerOzono() {
  */
 double leerTemperatura() {
   double Vtemp = leerValorAnalogico(PIN_Vtemp);
-  double ValorTemperatura = 143.1324 * Vtemp - 29.6136; 
+
+  //double ValorTemperatura = 143.1324 * Vtemp - 29.6136; 
+  double ValorTemperatura =  (Vtemp * 125) / 10; //CALIBRAR CON TERMOMETRO
   return ValorTemperatura;
 }
 
