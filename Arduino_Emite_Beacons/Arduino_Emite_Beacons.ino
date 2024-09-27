@@ -173,7 +173,7 @@ void loop() {
       startAdvertising(medicion);
    }
 
-   delay(1000);
+   delay(3000);
 
    Serial.print( " ** loop cont=" );
    Serial.println( cont );
@@ -193,16 +193,23 @@ MedicionSensor obtenerMedicionSensor() {
     double temperatura = leerTemperatura();
     double valorOzono = leerOzono();
     double concentracionOzono = obtenerConcentracionOzono(valorOzono);
-    double concentracionCorregida = corregirConcentracionOzono(temperatura, concentracionOzono);
+    double concentracionCorregida = corregirConcentracionOzono(temperatura, concentracionOzono) * 10; //Para tener 100ppm de resolución en vez de 10ppm
 
     MedicionSensor medicion;
-    medicion.temperatura = temperatura;
+    medicion.temperatura = round(temperatura);
     medicion.GasOzonoCorregido = concentracionCorregida;
 
     Serial.print("Concentración de Ozono corregida: ");
-    Serial.println(concentracionCorregida); //HAY QUE CALIBRAR EL OZONO
+    Serial.print(concentracionCorregida); //HAY QUE CALIBRAR EL OZONO
+    Serial.print(" ppm x 10. Concrentración real medida: "); //Para tener 100ppm de resolución en vez de 10ppm
+    Serial.print(concentracionCorregida / 10);
+    Serial.println(" ppm");
+
     Serial.print("Temperatura: ");
-    Serial.println(temperatura); //HAY QUE CALIBRAR LA TEMPERATURA
+    Serial.print(round(temperatura)); //HAY QUE CALIBRAR LA TEMPERATURA
+    Serial.print("ºC redondeados. Temperatura real medida: ");
+    Serial.print(temperatura);
+    Serial.println("ºC");
     
 
     return medicion;
@@ -257,7 +264,7 @@ double leerOzono() {
 double leerTemperatura() {
   double Vtemp = leerValorAnalogico(PIN_Vtemp);
   double ValorTemperatura = 143.1324 * Vtemp - 29.6136; 
-  return round(ValorTemperatura);
+  return ValorTemperatura;
 }
 
 /**
@@ -279,7 +286,7 @@ double obtenerConcentracionOzono(double valorOzono) {
 }
 
 /**
-  @brief Corrige la concentración de Ozono basada en la temperatura
+  @brief Corrige la concentración de Ozono basada en la temperatura (No es relevante para nuestra aplicación, pero lo añado igual)
   @author Alejandro Rosado Jiménez
   
   temperatura: double, concentracionOzono: double -> corregirConcentracionOzono() -> double
@@ -292,14 +299,14 @@ double corregirConcentracionOzono(double temperatura, double concentracionOzono)
   // Corregir el "Zero Shift" (ppm/°C para temperaturas mayores de 30°C)
   double zeroShift = 0;
   if (temperatura > 30) {
-    zeroShift = (temperatura - 30) * 0.0066;  // Aplicar corrección para desplazamiento de cero
+    zeroShift = (temperatura - 30) * 0.0066;  // Aplicar corrección para desplazamiento de cero (Según la documentación, pero no es muy relevante por la imprecisión del sensor)
   }
 
   // Corregir la "Sensibilidad" (%/°C respecto a los 20°C)
-  double spanCorrection = 1 + (temperatura - 20) * 0.003;  // 0.3%/°C sobre 20°C
+  double spanCorreccion = 1 + (temperatura - 20) * 0.003;  // 0.3%/°C sobre 20°C (Según la documentación)
 
   // Aplicar las correcciones
-  double concentracionCorregida = (concentracionOzono - zeroShift) * spanCorrection;
+  double concentracionCorregida = (concentracionOzono - zeroShift) * spanCorreccion;
 
   return concentracionCorregida;
 }
