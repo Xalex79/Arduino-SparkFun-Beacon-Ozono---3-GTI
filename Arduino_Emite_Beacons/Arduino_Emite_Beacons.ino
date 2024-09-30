@@ -264,11 +264,15 @@ double leerOzono() {
   @returns La temperatura leída en ºC
  */
 double leerTemperatura() {
-  double Vtemp = leerValorAnalogico(PIN_Vtemp);
-
-  //double ValorTemperatura = 143.1324 * Vtemp - 29.6136; 
-  double ValorTemperatura =  (Vtemp * 125) / 10; //CALIBRAR CON TERMOMETRO
-  return ValorTemperatura;
+    double Vtemp = leerValorAnalogico(PIN_Vtemp);
+    
+    // Factor de calibración
+    double factorCalibacion = 26.10 / 18.87;
+    
+    // Aplicamos el factor de calibración a la lectura original
+    double ValorTemperatura = (Vtemp * 125 / 10) * factorCalibacion;
+    
+    return ValorTemperatura;
 }
 
 /**
