@@ -1,6 +1,6 @@
 // -*- mode: c++ -*-
 // ----------------------------------------------------
-/**
+/*
   @file Arduino_Emite_Beacons.ino
   @brief Implementación de un iBeacon básico usando un SparkFun nRF52840 Mini
   @author Jordi Bataller Mascarell
@@ -36,6 +36,11 @@ const double SensibilidadSensor = -35.35; //Según el QR del sensor
 const int GananciaSensor = 499; //499 kV/A
 const int BIASsensor = -0.025; //-25 mV
 
+// Definir la pendiente y el intercepto obtenidos de la regresión DE LA CALIBRACIÓN CON LOS VALORES MEDIDOS
+float pendiente = 0.598082; // Valor de la pendiente calculado
+float intercepto = 2.411722; // Valor del intercepto calculado
+
+
 //Struct para almacenar los valores de temperatura y GasOzonoCorregido de una medicion 
 struct MedicionSensor {
   double temperatura;
@@ -50,7 +55,7 @@ void setup() {
    //
    //
    Serial.begin(115200);
-   while ( !Serial ) delay(10);
+   //while ( !Serial ) delay(10);
 
    Serial.println("-----------------------\n");
    Serial.println(" PRUEBAS iBeacon  ");
@@ -86,7 +91,7 @@ void setup() {
 } // setup()
 
 
-/**
+/*
   @brief Proceso de advertising BLE (Bluetooth Low Energy) con los valores de la primera medición
   @author Alejandro Rosado Jiménez
   
@@ -181,7 +186,7 @@ void loop() {
 // ----------------------------------------------------
 // ----------------------------------------------------
 
-/**
+/*
   @brief Obtener las mediciones de los sensores de ozono y temperatura corregidas
   @author Alejandro Rosado Jiménez
   
@@ -215,7 +220,7 @@ MedicionSensor obtenerMedicionSensor() {
     return medicion;
 }
 
-/**
+/*
   @brief Lee el analógico del ADC de 12 bits y lo convierte a voltaje
   @author Alejandro Rosado Jiménez
   
@@ -226,12 +231,12 @@ MedicionSensor obtenerMedicionSensor() {
  */
 double leerValorAnalogico(int pin) {
   // Se lee el valor digitalizado del pin analógico y se convierte a voltios
-  //Serial.print("Valor pin: ");
-  //Serial.println(analogRead(pin));
+  Serial.print("Valor pin: ");
+  Serial.println(analogRead(pin));
   return ((analogRead(pin) * 3.3) / 1023) + BIASsensor;
 }
 
-/**
+/*
   @brief Lee el valor del Ozono del sensor y lo convierte a un valor en voltios
   @author Alejandro Rosado Jiménez
   
@@ -245,7 +250,7 @@ double leerOzono() {
   double Vref = leerValorAnalogico(PIN_Vref);
 
   // Calcular la diferencia de voltaje
-  double lecturaFinal = VOzono - Vref; 
+  double lecturaFinal = abs(VOzono - Vref); 
 
   // Asegurarse de que la lectura no sea negativa (esto de momento no es muy preciso)
   if(lecturaFinal < 0) {
@@ -255,7 +260,7 @@ double leerOzono() {
   return lecturaFinal;
 }
 
-/**
+/*
   @brief Leer la temperatura del sensor en ºC
   @author Alejandro Rosado Jiménez
   
@@ -275,7 +280,7 @@ double leerTemperatura() {
     return ValorTemperatura;
 }
 
-/**
+/*
   @brief Calcula la concentración de ozono a partir del valor leído
   @author Alejandro Rosado Jiménez
   
@@ -286,14 +291,14 @@ double leerTemperatura() {
  */
 double obtenerConcentracionOzono(double valorOzono) {
   double M = (SensibilidadSensor * GananciaSensor * 0.000001);
-  //Serial.println(M);
+  Serial.println(M);
   //double M = -0.017639;
   //double M = 0.007485;
-  double concentracionOzono = valorOzono / M; 
+  double concentracionOzono = abs(valorOzono / M); 
   return concentracionOzono;
 }
 
-/**
+/*
   @brief Corrige la concentración de Ozono basada en la temperatura (No es relevante para nuestra aplicación, pero lo añado igual)
   @author Alejandro Rosado Jiménez
   
@@ -316,7 +321,7 @@ double corregirConcentracionOzono(double temperatura, double concentracionOzono)
   // Aplicar las correcciones
   double concentracionCorregida = (concentracionOzono - zeroShift) * spanCorreccion;
 
-  return concentracionCorregida;
+  return abs(pendiente * concentracionCorregida * intercepto);
 }
 
 // ----------------------------------------------------
