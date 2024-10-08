@@ -138,7 +138,7 @@ double obtenerConcentracionOzono(double valorOzono) {
  * temperatura: double, concentracionOzono: double -> corregirConcentracionOzono() -> double
  * 
  * Aplica correcciones a la concentración de Ozono basadas en la temperatura actual,
- * incluyendo correcciones por desplazamiento de cero y sensibilidad.
+ * incluyendo correcciones por desplazamiento de cero y sensibilidad (siguiendo la documentación).
  */
 double corregirConcentracionOzono(double temperatura, double concentracionOzono) {
   double zeroShift = (temperatura > 30) ? (temperatura - 30) * 0.0066 : 0;
